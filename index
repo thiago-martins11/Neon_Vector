@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>NEON VECTOR: CYBERSTRIKE ULTIMATE</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="game-wrapper">
+        <!-- Canvas Principal -->
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- Camada HUD -->
+        <div class="ui-layer">
+            <div class="hud-top">
+                <div class="score-box">
+                    PONTOS <span id="comboBadge" class="combo-badge hidden">x1 COMBO</span>
+                    <div id="scoreVal" class="score-val">0000</div>
+                    <div id="creditsVal" class="credits-val">₡ 0 CRÉDITOS</div>
+                </div>
+                <button id="hudPauseBtn" class="hud-btn">⏸</button>
+                <div class="health-container">
+                    <div style="font-size: 0.75rem; color: #00e5ff;">ESCUDO</div>
+                    <div class="bar-bg">
+                        <div id="healthFill" class="bar-fill health-fill"></div>
+                    </div>
+
+                    <!-- HUD Discreto do Ultimate -->
+                    <div class="ult-label-box">
+                        <span>ULTIMATE [E]</span>
+                        <span id="ultPercentVal">0%</span>
+                    </div>
+                    <div class="bar-bg ult-bar-bg">
+                        <div id="ultFill" class="bar-fill ult-fill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botão Virtual Mobile/Touch -->
+            <div class="action-buttons-container">
+                <button id="dashBtn" class="action-btn dash-btn">DASH [SHIFT]</button>
+                <button id="ultBtn" class="action-btn ult-btn">ULTIMATE [E]</button>
+            </div>
+
+            <!-- Barra de Vida do Chefe -->
+            <div id="bossHealthContainer" class="boss-health-container hidden">
+                <div id="bossTitle" class="boss-title">ALERTA: CHEFE DETECTADO</div>
+                <div class="boss-bar-bg">
+                    <div id="bossHealthFill" class="boss-bar-fill"></div>
+                </div>
+            </div>
+
+            <!-- Alerta Central de Dificuldade Adaptada -->
+            <div id="adaptiveNotice" class="adaptive-indicator hidden">
+                ⚠️ DIFICULDADE ADAPTADA: NÍVEL AUMENTADO! ⚠️
+            </div>
+
+            <div id="powerupNotice" class="powerup-indicator">TIRO TRIPLO ATIVO!</div>
+        </div>
+
+        <!-- Tela Inicial -->
+        <div id="startScreen" class="overlay-screen">
+            <h1 class="title-main">NEON VECTOR<br><span style="font-size:1.6rem; color:#ff007f;">CYBERSTRIKE ULTIMATE</span></h1>
+            <p class="subtitle">RETRO SYNTHWAVE ARCADE</p>
+
+            <div class="difficulty-container">
+                <label class="diff-label">DIFICULDADE INICIAL:</label>
+                <div class="diff-selector">
+                    <button class="btn-diff active" data-diff="EASY">FÁCIL</button>
+                    <button class="btn-diff" data-diff="MEDIUM">MÉDIO</button>
+                    <button class="btn-diff" data-diff="HARD">DIFÍCIL</button>
+                    <button class="btn-diff" data-diff="EXTREME">EXTREMO</button>
+                </div>
+            </div>
+
+            <div class="main-menu-btns">
+                <button id="startBtn" class="btn-neon">JOGAR AGORA</button>
+                <button id="shopBtn" class="btn-neon btn-secondary">LOJA DE UPGRADES</button>
+                <button id="leaderboardBtn" class="btn-neon btn-secondary">RANKING TOP 5</button>
+            </div>
+            <div class="instructions">
+                <strong>Controles:</strong><br>
+                Mover: <b>WASD / Setas / Arrasto</b> | Dash: <b>SHIFT</b><br>
+                Ultimate EMP: <b>Tecla E</b> | Pausar: <b>Tecla P</b><br>
+                <i>A dificuldade adapta-se e escala com a sua pontuação!</i>
+            </div>
+        </div>
+
+        <!-- Tela de Loja de Upgrades -->
+        <div id="shopScreen" class="overlay-screen hidden">
+            <h2 class="title-secondary">LOJA CYBERNETICA</h2>
+            <p class="subtitle" id="shopCreditsText">SEUS CRÉDITOS: ₡ 0</p>
+            <div class="shop-items">
+                <div class="shop-item">
+                    <div>
+                        <strong>VIDA MÁXIMA</strong>
+                        <div class="shop-desc" id="healthLvlText">Nível 1 (+0 HP)</div>
+                    </div>
+                    <button id="buyHealthBtn" class="btn-shop">₡ 100</button>
+                </div>
+                <div class="shop-item">
+                    <div>
+                        <strong>VELOCIDADE NAVE</strong>
+                        <div class="shop-desc" id="speedLvlText">Nível 1 (+0 Spd)</div>
+                    </div>
+                    <button id="buySpeedBtn" class="btn-shop">₡ 100</button>
+                </div>
+                <div class="shop-item">
+                    <div>
+                        <strong>DURAÇÃO POWER-UP</strong>
+                        <div class="shop-desc" id="durationLvlText">Nível 1 (+0s)</div>
+                    </div>
+                    <button id="buyDurationBtn" class="btn-shop">₡ 150</button>
+                </div>
+            </div>
+            <button id="closeShopBtn" class="btn-neon" style="margin-top: 20px;">VOLTAR</button>
+        </div>
+
+        <!-- Tela de Ranking / Tabela de Líderes -->
+        <div id="leaderboardScreen" class="overlay-screen hidden">
+            <h2 class="title-secondary">MELHORES PILOTOS</h2>
+            <div id="leaderboardList" class="leaderboard-list"></div>
+            <button id="closeLeaderboardBtn" class="btn-neon" style="margin-top: 20px;">VOLTAR</button>
+        </div>
+
+        <!-- Tela de Pausa -->
+        <div id="pauseScreen" class="overlay-screen hidden">
+            <h1 class="title-main" style="color: #00e5ff;">JOGO PAUSADO</h1>
+            
+            <div class="difficulty-container" style="margin-bottom: 20px;">
+                <label class="diff-label">DIFICULDADE BASE:</label>
+                <div class="diff-selector">
+                    <button class="btn-diff active" data-diff="EASY">FÁCIL</button>
+                    <button class="btn-diff" data-diff="MEDIUM">MÉDIO</button>
+                    <button class="btn-diff" data-diff="HARD">DIFÍCIL</button>
+                    <button class="btn-diff" data-diff="EXTREME">EXTREMO</button>
+                </div>
+            </div>
+
+            <div class="pause-menu-btns">
+                <button id="resumeBtn" class="btn-neon">CONTINUAR</button>
+                <button id="soundToggleBtn" class="btn-neon btn-secondary">SOM: LIGADO</button>
+                <button id="quitBtn" class="btn-neon btn-secondary">MENU PRINCIPAL</button>
+            </div>
+        </div>
+
+        <!-- Tela de Game Over -->
+        <div id="gameOverScreen" class="overlay-screen hidden">
+            <h1 class="title-main" style="color: #ff0055;">SISTEMA DESTRUIDO</h1>
+            <p class="subtitle" id="finalScoreText">PONTUAÇÃO FINAL: 0</p>
+            <p class="subtitle" id="earnedCreditsText" style="color: #00ff66; margin-top: -30px;">+0 CRÉDITOS OBTIDOS</p>
+            
+            <div id="nameInputContainer" class="name-input-container">
+                <input type="text" id="playerNameInput" maxlength="10" placeholder="SEU NOME" />
+                <button id="saveScoreBtn" class="btn-neon" style="width: auto; padding: 10px 20px;">SALVAR</button>
+            </div>
+
+            <button id="restartBtn" class="btn-neon" style="margin-top: 15px;">REINICIAR</button>
+        </div>
+    </div>
+
+    <script src="script.js" defer></script>
+</body>
+</html>
