@@ -117,7 +117,8 @@ const difficultySettings = {
     EASY: { enemySpeed: 0.65, spawnRate: 1.4, bossHp: 0.7, damageMult: 0.5 },
     MEDIUM: { enemySpeed: 1.0, spawnRate: 1.0, bossHp: 1.0, damageMult: 1.0 },
     HARD: { enemySpeed: 1.3, spawnRate: 0.8, bossHp: 1.4, damageMult: 1.25 },
-    EXTREME: { enemySpeed: 1.6, spawnRate: 0.6, bossHp: 2.0, damageMult: 1.5 }
+    EXTREME: { enemySpeed: 1.6, spawnRate: 0.6, bossHp: 2.0, damageMult: 1.5 },
+    IMPOSSIBLE: { enemySpeed: 2.1, spawnRate: 0.35, bossHp: 3.0, damageMult: 2.2 }
 };
 
 let currentDifficulty = localStorage.getItem('cyber_difficulty') || 'EASY';
@@ -158,9 +159,11 @@ function getUpgradeCost(type) {
 }
 
 function checkAdaptiveDifficulty() {
+    const step = currentDifficulty === 'IMPOSSIBLE' ? 2000 : ADAPTIVE_STEP;
+
     if (score >= nextAdaptiveMilestone) {
         adaptiveLevel++;
-        nextAdaptiveMilestone += ADAPTIVE_STEP;
+        nextAdaptiveMilestone += step;
 
         triggerAdaptiveNotice(`DIFICULDADE ADAPTADA: NÍVEL +${adaptiveLevel}`);
         audio.playPowerup();
@@ -424,8 +427,7 @@ class Boss {
         this.hp = this.maxHp;
         this.speedX = Math.min(7, (3 + level * 0.7) * diff.enemySpeed * (1 + adaptiveLevel * 0.04));
         
-        // Intervalo de tiro reduz com o nível e dificuldade
-        this.attackRate = Math.max(15, Math.floor((45 - level * 4) * diff.spawnRate * Math.max(0.65, 1 - adaptiveLevel * 0.05))); 
+        this.attackRate = Math.max(12, Math.floor((45 - level * 4) * diff.spawnRate * Math.max(0.6, 1 - adaptiveLevel * 0.05))); 
         this.attackTimer = 0;
         this.patternStep = 0;
     }
@@ -445,23 +447,18 @@ class Boss {
     attack() {
         audio.playLaser(400 - Math.min(200, this.level * 20));
 
-        // PADRÕES DE TIRO DIFERENTES POR NÍVEL DE CHEFE
         if (this.level === 1) {
-            // CHEFE 1: Leque Tradicional (3 Direções)
             enemyBullets.push(new Bullet(this.x, this.y + 30, 0, 5.5, false, '#ff0055'));
             enemyBullets.push(new Bullet(this.x - 20, this.y + 20, -2.5, 5, false, '#ff0055'));
             enemyBullets.push(new Bullet(this.x + 20, this.y + 20, 2.5, 5, false, '#ff0055'));
 
         } else if (this.level === 2) {
-            // CHEFE 2: Rajadas Alternadas Lateral e Direcionadas
             if (this.patternStep % 2 === 0) {
-                // Tiro Duplo Aberto
                 enemyBullets.push(new Bullet(this.x - 30, this.y + 20, -3.5, 5.5, false, '#ff00ff'));
                 enemyBullets.push(new Bullet(this.x + 30, this.y + 20, 3.5, 5.5, false, '#ff00ff'));
                 enemyBullets.push(new Bullet(this.x - 10, this.y + 30, 0, 6, false, '#ff00ff'));
                 enemyBullets.push(new Bullet(this.x + 10, this.y + 30, 0, 6, false, '#ff00ff'));
             } else {
-                // Tiro Perseguidor Centralizado ao Jogador
                 let angle = 0;
                 if (player) angle = Math.atan2(player.y - this.y, player.x - this.x);
                 const spd = 6;
@@ -469,7 +466,6 @@ class Boss {
             }
 
         } else if (this.level === 3) {
-            // CHEFE 3: Expansão Circular (Nova / 360 Graus em Ondas)
             const count = 8 + Math.min(4, adaptiveLevel);
             const bulletSpeed = 4.5;
             for (let i = 0; i < count; i++) {
@@ -480,17 +476,14 @@ class Boss {
             }
 
         } else {
-            // CHEFE 4+: Padrão Caótico Avançado (Anéis + Mísseis Rápidos)
             const count = 10;
             const bulletSpeed = 5 + Math.min(2, this.level * 0.3);
             
-            // Anel Orbital
             for (let i = 0; i < count; i++) {
                 const angle = (Math.PI * 2 / count) * i;
                 enemyBullets.push(new Bullet(this.x, this.y, Math.cos(angle) * bulletSpeed, Math.sin(angle) * bulletSpeed, false, '#ff0055'));
             }
 
-            // Projétil de Alta Velocidade no Jogador
             if (player) {
                 const anglePlayer = Math.atan2(player.y - this.y, player.x - this.x);
                 enemyBullets.push(new Bullet(this.x, this.y + 20, Math.cos(anglePlayer) * (bulletSpeed + 2), Math.sin(anglePlayer) * (bulletSpeed + 2), false, '#00e5ff'));
@@ -769,7 +762,7 @@ function startGame() {
     nextBossScore = BOSS_INTERVAL; currentBoss = null; isPaused = false; ultimateEnergy = 0;
 
     adaptiveLevel = 0;
-    nextAdaptiveMilestone = ADAPTIVE_STEP;
+    nextAdaptiveMilestone = currentDifficulty === 'IMPOSSIBLE' ? 2000 : ADAPTIVE_STEP;
 
     bullets = []; enemyBullets = []; enemies = []; particles = []; powerups = [];
     
