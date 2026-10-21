@@ -38,7 +38,7 @@
                 </div>
             </div>
 
-            <!-- Botão Virtual Mobile/Touch -->
+            <!-- Botões Virtuais Mobile/Touch -->
             <div class="action-buttons-container">
                 <button id="dashBtn" class="action-btn dash-btn">DASH [SHIFT]</button>
                 <button id="ultBtn" class="action-btn ult-btn">ULTIMATE [E]</button>
@@ -72,6 +72,7 @@
                     <button class="btn-diff" data-diff="MEDIUM">MÉDIO</button>
                     <button class="btn-diff" data-diff="HARD">DIFÍCIL</button>
                     <button class="btn-diff" data-diff="EXTREME">EXTREMO</button>
+                    <button class="btn-diff btn-impossible" data-diff="IMPOSSIBLE">☠️ IMPOSSÍVEL</button>
                 </div>
             </div>
 
@@ -136,6 +137,7 @@
                     <button class="btn-diff" data-diff="MEDIUM">MÉDIO</button>
                     <button class="btn-diff" data-diff="HARD">DIFÍCIL</button>
                     <button class="btn-diff" data-diff="EXTREME">EXTREMO</button>
+                    <button class="btn-diff btn-impossible" data-diff="IMPOSSIBLE">☠️ IMPOSSÍVEL</button>
                 </div>
             </div>
 
