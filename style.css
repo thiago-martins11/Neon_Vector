@@ -1,6 +1,3 @@
-/* ==========================================================================
-   ESTILOS GERAIS E INTERFACE NEON SYNTHWAVE
-   ========================================================================== */
 * {
     margin: 0;
     padding: 0;
@@ -37,6 +34,23 @@ canvas {
     display: block;
     width: 100%;
     height: 100%;
+}
+
+.danger-vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-shadow: inset 0 0 60px rgba(255, 0, 0, 0.9);
+    pointer-events: none;
+    z-index: 5;
+    animation: pulseDanger 0.8s infinite alternate;
+}
+
+@keyframes pulseDanger {
+    0% { opacity: 0.4; }
+    100% { opacity: 1; }
 }
 
 .ui-layer {
@@ -136,13 +150,13 @@ canvas {
 .health-fill { background: linear-gradient(90deg, #ff0055, #00e5ff); }
 .ult-fill { background: linear-gradient(90deg, #aa00ff, #ff00ff); }
 
-/* Selector de Dificuldade */
 .difficulty-container {
     margin-bottom: 15px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 6px;
+    width: 100%;
 }
 
 .diff-label {
@@ -156,23 +170,25 @@ canvas {
     display: flex;
     gap: 4px;
     background: rgba(255, 255, 255, 0.05);
-    padding: 4px;
+    padding: 6px;
     border-radius: 12px;
     border: 1px solid rgba(0, 229, 255, 0.2);
     flex-wrap: wrap;
     justify-content: center;
+    max-width: 95%;
 }
 
 .btn-diff {
     background: transparent;
     border: none;
     color: #a0a0c0;
-    padding: 6px 10px;
-    font-size: 0.68rem;
+    padding: 6px 8px;
+    font-size: 0.65rem;
     font-weight: 800;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
+    white-space: nowrap;
 }
 
 .btn-diff.active {
@@ -199,10 +215,36 @@ canvas {
     border: 1px solid #ff007f;
 }
 
-/* Alerta de Dificuldade Adaptada */
+.btn-diff[data-diff="UNPLAYABLE"].active {
+    background: #ff0000;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 1), 0 0 25px rgba(255, 0, 0, 0.8);
+    border: 1px solid #ff0000;
+}
+
+.bonus-indicator {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 204, 0, 0.2);
+    border: 2px solid #ffcc00;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(255, 204, 0, 0.6);
+    backdrop-filter: blur(4px);
+    pointer-events: none;
+    width: 85%;
+}
+
 .adaptive-indicator {
     position: absolute;
-    top: 35%;
+    top: 38%;
     left: 50%;
     transform: translate(-50%, -50%);
     background: rgba(255, 0, 85, 0.25);
@@ -221,7 +263,6 @@ canvas {
     width: 85%;
 }
 
-/* Botões de Ação Touch */
 .action-buttons-container {
     display: flex;
     justify-content: space-between;
@@ -245,7 +286,6 @@ canvas {
     color: #ff00ff;
 }
 
-/* Chefe */
 .boss-health-container {
     width: 100%;
     margin-top: 10px;
@@ -272,10 +312,10 @@ canvas {
 .boss-bar-fill {
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, #ffaa00, #ff0055);
+    background: linear-gradient(90deg, #00ff66, #ffaa00);
+    transition: width 0.2s ease-out, background 0.3s ease;
 }
 
-/* Telas Overlay */
 .overlay-screen {
     position: absolute;
     top: 0;
@@ -313,12 +353,12 @@ canvas {
     margin-bottom: 5px;
 }
 
-.subtitle { font-size: 0.85rem; color: #a0a0c0; letter-spacing: 2px; margin-bottom: 20px; }
+.subtitle { font-size: 0.85rem; color: #a0a0c0; letter-spacing: 2px; margin-bottom: 15px; }
 
 .main-menu-btns, .pause-menu-btns {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
     align-items: center;
 }
 
@@ -326,8 +366,8 @@ canvas {
     background: transparent;
     border: 2px solid #00e5ff;
     color: #00e5ff;
-    padding: 12px 30px;
-    font-size: 1rem;
+    padding: 10px 25px;
+    font-size: 0.9rem;
     font-weight: 800;
     letter-spacing: 2px;
     border-radius: 25px;
@@ -338,35 +378,34 @@ canvas {
 
 .btn-neon.btn-secondary { border-color: #ff007f; color: #ff007f; box-shadow: 0 0 12px rgba(255, 0, 127, 0.4); }
 
-.instructions { margin-top: 25px; font-size: 0.8rem; color: #707090; line-height: 1.5; }
+.instructions { margin-top: 20px; font-size: 0.75rem; color: #707090; line-height: 1.4; }
 
-/* Loja */
-.shop-items { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 12px; }
+.shop-items { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 8px; max-height: 60vh; overflow-y: auto; padding-right: 5px; }
 
 .shop-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: rgba(255, 255, 255, 0.05);
-    padding: 12px 16px;
+    padding: 10px 14px;
     border-radius: 10px;
     border: 1px solid rgba(0, 229, 255, 0.2);
     text-align: left;
 }
 
-.shop-desc { font-size: 0.75rem; color: #a0a0c0; }
+.shop-desc { font-size: 0.72rem; color: #a0a0c0; }
 
 .btn-shop {
     background: #00ff66;
     color: #050508;
     border: none;
-    padding: 8px 14px;
+    padding: 8px 12px;
     border-radius: 15px;
     font-weight: 900;
     cursor: pointer;
+    min-width: 75px;
 }
 
-/* Tabela de Líderes */
 .leaderboard-list { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 8px; }
 
 .leader-row {
@@ -403,3 +442,454 @@ canvas {
     opacity: 0;
     transition: opacity 0.3s;
 }
+
+/* ==========================================================================
+   CYBER OVERLOAD (FEVER MODE) + ANUNCIADOR DE COMBOS
+   ========================================================================== */
+.overload-box {
+    pointer-events: auto;
+    cursor: pointer;
+    margin-top: 6px;
+}
+
+.overload-label-box { color: #ffcc00; margin-top: 0; }
+
+.overload-bar-bg { height: 7px; border-color: rgba(255, 204, 0, 0.45); }
+
+.overload-fill { background: linear-gradient(90deg, #ff7a00, #ffe066); }
+
+/* Barra cheia e aguardando ativação manual (OVERLOAD_CFG.AUTO_ACTIVATE = false) */
+.overload-box.ready .overload-bar-bg { animation: overloadReady 0.45s infinite alternate; }
+.overload-box.ready .overload-label-box { color: #fff; }
+
+/* Overload em andamento: a barra vira um cronômetro que esvazia */
+.overload-box.active .overload-label-box { color: #fff; }
+.overload-box.active .overload-bar-bg { border-color: #ffe066; box-shadow: 0 0 12px rgba(255, 204, 0, 0.9); }
+.overload-box.active .overload-fill {
+    background: linear-gradient(90deg, #ff8800, #ffcc00, #fff3b0);
+    transition: width 0.1s linear;
+}
+
+@keyframes overloadReady {
+    from { box-shadow: 0 0 4px rgba(255, 204, 0, 0.4); }
+    to   { box-shadow: 0 0 16px rgba(255, 204, 0, 1); }
+}
+
+/* Filtro dourado aplicado ao canvas durante o Overload (o HUD continua com as cores normais) */
+canvas { transition: filter 0.3s ease; }
+
+#game-wrapper.overload-active canvas {
+    filter: sepia(0.9) saturate(2.6) hue-rotate(-12deg) brightness(1.12) contrast(1.08);
+}
+
+#game-wrapper.overload-active {
+    animation: overloadAura 0.8s infinite alternate;
+}
+
+@keyframes overloadAura {
+    from { box-shadow: 0 0 25px rgba(255, 204, 0, 0.45), 0 0 70px rgba(255, 140, 0, 0.25); }
+    to   { box-shadow: 0 0 45px rgba(255, 220, 80, 0.85), 0 0 120px rgba(255, 160, 0, 0.5); }
+}
+
+/* Anunciador de combos: DOUBLE KILL, MEGA KILL, NEON OVERLOAD... */
+.combo-announcer {
+    position: absolute;
+    top: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.5);
+    font-size: 2.1rem;
+    font-weight: 900;
+    font-style: italic;
+    letter-spacing: 3px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 12;
+}
+
+.combo-announcer.show { animation: comboPop 1.15s ease-out forwards; }
+
+@keyframes comboPop {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    14%  { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+    28%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    78%  { opacity: 1; transform: translate(-50%, -58%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -85%) scale(1.05); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #game-wrapper.overload-active { animation: none; box-shadow: 0 0 40px rgba(255, 204, 0, 0.7); }
+    .overload-box.ready .overload-bar-bg { animation: none; }
+    .combo-announcer.show { animation-duration: 0.6s; }
+}
+
+/* ==========================================================================
+   v2: ROLETA DE CARTAS, RARIDADES, METAS, ÁRVORE DA LOJA, PHANTOM, GAME OVER
+   ========================================================================== */
+
+/* ---- Roleta pós-chefe ---- */
+.roulette-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 96%;
+}
+
+.roulette-reel {
+    width: 150px;
+    min-height: 190px;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+}
+
+.reel-face {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 12px;
+    border: 2px solid rgba(0, 229, 255, 0.35);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 0.8rem;
+    font-weight: 800;
+    line-height: 1.3;
+    color: #00e5ff;
+}
+
+.reel-face.spinning { animation: reelShake 0.12s infinite; filter: blur(0.6px); }
+
+@keyframes reelShake {
+    0%   { transform: translateY(-3px); }
+    50%  { transform: translateY(3px); }
+    100% { transform: translateY(-3px); }
+}
+
+.roulette-hint { margin-top: 14px; font-size: 0.7rem; color: #707090; letter-spacing: 1px; }
+
+.reel-card {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding: 14px 10px;
+    border-radius: 10px;
+    border: 2px solid #9fb4c8;
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    animation: cardReveal 0.35s ease-out;
+}
+
+.reel-card strong { font-size: 0.82rem; margin-bottom: 8px; color: #fff; }
+.reel-card .card-desc { font-size: 0.68rem; color: #a0a0c0; line-height: 1.35; }
+.reel-card .btn-shop { margin-top: auto; width: 100%; }
+.reel-card .rarity-tag { font-size: 0.62rem; font-weight: 900; letter-spacing: 2px; margin-bottom: 6px; }
+.reel-card .synergy { margin: 8px 0 4px; font-size: 0.6rem; color: #ffcc66; line-height: 1.3; }
+.reel-card.risky .card-desc { color: #ffb3c1; }
+
+@keyframes cardReveal {
+    0%   { transform: scale(0.6) rotateY(90deg); opacity: 0; }
+    100% { transform: scale(1) rotateY(0); opacity: 1; }
+}
+
+.roulette-row:not(.ready) .reel-card { pointer-events: none; }
+
+.reel-card.rarity-COMUM    { border-color: #9fb4c8; box-shadow: 0 0 8px rgba(159, 180, 200, 0.25); }
+.reel-card.rarity-RARA     { border-color: #3aa0ff; box-shadow: 0 0 14px rgba(58, 160, 255, 0.5); }
+.reel-card.rarity-EPICA    { border-color: #b44dff; box-shadow: 0 0 18px rgba(180, 77, 255, 0.65); }
+.reel-card.rarity-LENDARIA {
+    border-color: #ffcc00;
+    background: linear-gradient(135deg, rgba(255, 204, 0, 0.18), rgba(255, 140, 0, 0.08));
+    box-shadow: 0 0 24px rgba(255, 204, 0, 0.9), 0 0 60px rgba(255, 170, 0, 0.55);
+    animation: cardReveal 0.35s ease-out, legendaryGlow 1s infinite alternate 0.35s;
+}
+
+@keyframes legendaryGlow {
+    from { box-shadow: 0 0 18px rgba(255, 204, 0, 0.7), 0 0 40px rgba(255, 170, 0, 0.35); }
+    to   { box-shadow: 0 0 34px rgba(255, 230, 100, 1), 0 0 80px rgba(255, 170, 0, 0.75); }
+}
+
+#cardSelectionModal.legendary-flash { animation: legendaryFlash 1.1s ease-out; }
+
+@keyframes legendaryFlash {
+    0%   { background: rgba(255, 220, 90, 0.95); }
+    100% { background: rgba(5, 5, 12, 0.9); }
+}
+
+/* ---- Aviso de meta cumprida (HUD) ---- */
+.quest-toast {
+    position: absolute;
+    top: 104px;
+    left: 50%;
+    transform: translate(-50%, -30px);
+    width: 88%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 14px;
+    border-radius: 12px;
+    border: 2px solid #00ff99;
+    background: rgba(0, 40, 25, 0.82);
+    box-shadow: 0 0 18px rgba(0, 255, 153, 0.55);
+    text-align: center;
+    font-size: 0.78rem;
+    letter-spacing: 1px;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 14;
+}
+
+.quest-toast strong { color: #fff; font-weight: 900; }
+.quest-toast span { color: #00ff99; font-weight: 800; }
+.quest-toast.show { animation: toastIn 2.85s ease-out forwards; }
+
+@keyframes toastIn {
+    0%   { opacity: 0; transform: translate(-50%, -30px); }
+    10%  { opacity: 1; transform: translate(-50%, 0); }
+    85%  { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, -20px); }
+}
+
+/* ---- Abas e lista de metas ---- */
+.tab-row { display: flex; gap: 8px; margin: 6px 0 10px; }
+
+.btn-tab {
+    background: transparent;
+    border: 1px solid rgba(0, 229, 255, 0.4);
+    color: #a0a0c0;
+    padding: 6px 14px;
+    border-radius: 14px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+.btn-tab.active { background: #00e5ff; color: #050508; box-shadow: 0 0 8px rgba(0, 229, 255, 0.6); }
+
+.chain-title { margin-top: 8px; font-size: 0.78rem; font-weight: 900; letter-spacing: 2px; color: #00ffcc; text-align: left; }
+.quest-row.active { border-color: #00ff99; box-shadow: 0 0 10px rgba(0, 255, 153, 0.25); }
+.quest-row.done { opacity: 0.6; }
+.quest-row.locked { opacity: 0.4; }
+.quest-note { margin-top: 8px; text-align: center; }
+
+/* ---- Árvore de upgrades visuais da loja ---- */
+.tree-title { margin-top: 12px; border-top: 1px solid rgba(0, 229, 255, 0.3); padding-top: 8px; font-size: 0.8rem; font-weight: 900; letter-spacing: 1px; text-align: left; }
+
+.tree-branch {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 6px 0 0 10px;
+    padding-left: 12px;
+    border-left: 2px solid rgba(0, 229, 255, 0.3);
+}
+
+.tree-node {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    text-align: left;
+}
+
+.tree-node::before { content: ''; position: absolute; left: -14px; top: 50%; width: 12px; border-top: 2px solid rgba(0, 229, 255, 0.3); }
+.tree-node.equipped { border-color: #00ff66; box-shadow: 0 0 10px rgba(0, 255, 102, 0.3); }
+.tree-node.locked { opacity: 0.45; }
+.tree-icon { font-size: 1.3rem; width: 28px; text-align: center; color: #00e5ff; }
+.tree-info { flex: 1; font-size: 0.8rem; }
+.laser-swatch { display: inline-block; width: 24px; height: 6px; border-radius: 3px; }
+.btn-shop:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ---- Modo Phantom ---- */
+.phantom-hud {
+    position: absolute;
+    top: 98px;
+    left: 15px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #c8f6ff;
+    text-shadow: 0 0 8px rgba(200, 246, 255, 0.6);
+    pointer-events: none;
+}
+
+/* ---- Bullet-time ---- */
+#game-wrapper.bullet-time canvas { filter: saturate(0.55) contrast(1.15) hue-rotate(190deg) brightness(0.95); }
+#game-wrapper.bullet-time { box-shadow: 0 0 40px rgba(120, 200, 255, 0.55), 0 0 90px rgba(80, 120, 255, 0.35); }
+
+/* ---- Anunciador de combos por intensidade (tier) ---- */
+.combo-announcer.tier-1 { font-size: 1.7rem; }
+.combo-announcer.tier-2 { font-size: 2rem; }
+.combo-announcer.tier-3 { font-size: 2.3rem; letter-spacing: 4px; }
+.combo-announcer.tier-4 { font-size: 2.6rem; letter-spacing: 4px; }
+.combo-announcer.tier-5 { font-size: 2.9rem; letter-spacing: 5px; }
+.combo-announcer.tier-6, .combo-announcer.tier-7 { font-size: 3.1rem; letter-spacing: 6px; animation-duration: 1.5s; }
+.combo-announcer.tier-4.show, .combo-announcer.tier-5.show, .combo-announcer.tier-6.show, .combo-announcer.tier-7.show { animation-name: comboPop, comboJitter; }
+
+@keyframes comboJitter {
+    0%, 100% { margin-left: 0; margin-top: 0; }
+    25% { margin-left: 2px; margin-top: -2px; }
+    50% { margin-left: -2px; margin-top: 1px; }
+    75% { margin-left: 1px; margin-top: 2px; }
+}
+
+/* ---- Game Over detalhado ---- */
+.game-over-taunt {
+    max-width: 92%;
+    margin: -6px 0 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1.4;
+    color: #ffcc66;
+    text-shadow: 0 0 10px rgba(255, 170, 0, 0.4);
+}
+
+.run-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    width: 100%;
+    max-width: 380px;
+}
+
+.stat-cell {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(0, 229, 255, 0.25);
+    border-radius: 10px;
+    padding: 8px 4px;
+}
+
+.stat-val { font-size: 1.05rem; font-weight: 900; color: #fff; }
+.stat-label { margin-top: 2px; font-size: 0.55rem; font-weight: 800; letter-spacing: 1px; color: #00e5ff; }
+
+/* Telas baixas: permite rolar os menus (adicional, não altera o layout original) */
+@media (max-height: 780px) {
+    .overlay-screen { justify-content: flex-start; overflow-y: auto; padding-top: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reel-face.spinning, .reel-card.rarity-LENDARIA, .combo-announcer.show { animation-duration: 0.01s; }
+}
+
+/* ==========================================================================
+   v3: REDESIGN VISUAL, LEGIBILIDADE
+   ========================================================================== */
+/* A animação pulseDanger sobrescrevia o opacity: 0 da classe .hidden e deixava a borda vermelha
+   sempre acesa, diluindo o vermelho que agora significa PERIGO. Agora ela só aparece com vida baixa. */
+.danger-vignette.hidden { animation: none; opacity: 0; }
+
+/* No Game Over, a linha de créditos tinha margin-top: -30px inline e ficava em cima da pontuação final. */
+#earnedCreditsText { margin-top: 0 !important; margin-bottom: 10px; }
+
+
+/* ==========================================================================
+   MODO HISTÓRIA (CAMPANHA): módulo adicional, não altera estilos existentes
+   ========================================================================== */
+.btn-neon.btn-story { border-color: #00ff99; color: #00ff99; box-shadow: 0 0 14px rgba(0, 255, 153, 0.45); }
+
+/* Botão "Menu de fases" só existe durante a campanha */
+.pause-story-btn { display: none; }
+.story-active .pause-story-btn { display: block; }
+
+/* ---- HUD da fase (abaixo dos painéis de pontos/escudo para não sobrepor) ---- */
+.story-hud {
+    position: absolute;
+    top: 128px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(62%, 260px);
+    text-align: center;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+.story-hud-stage { font-size: 0.7rem; font-weight: 900; letter-spacing: 2px; color: #00ff99; text-shadow: 0 0 8px rgba(0, 255, 153, 0.6); }
+.story-hud-bar {
+    height: 7px; margin: 3px 0;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 255, 153, 0.6);
+    border-radius: 4px; overflow: hidden;
+}
+.story-hud-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #00e5ff, #00ff99); transition: width 0.25s ease-out; }
+.story-hud-sub { font-size: 0.58rem; font-weight: 700; letter-spacing: 1px; color: #a0a0c0; }
+.story-clear .story-hud-fill { background: linear-gradient(90deg, #ffd700, #fff); box-shadow: 0 0 10px #ffd700; }
+.story-clear #gameCanvas { filter: brightness(1.25) saturate(1.3); transition: filter 0.4s; }
+
+/* ---- Tela de seleção de fases ---- */
+.story-screen { justify-content: flex-start; padding-top: 18px; gap: 6px; }
+.story-top-row {
+    display: flex; justify-content: space-between; width: 100%; max-width: 400px;
+    font-size: 0.7rem; font-weight: 800; letter-spacing: 1px; color: #00e5ff;
+}
+#storyStarsTotal { color: #ffd700; }
+.story-grid {
+    width: 100%; max-width: 400px; flex: 1 1 auto; min-height: 120px; max-height: 42vh;
+    overflow-y: auto; padding: 8px;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; align-content: start;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(0, 229, 255, 0.25); border-radius: 12px;
+    position: relative;
+}
+.story-cell {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    aspect-ratio: 1 / 1; padding: 2px;
+    background: rgba(0, 229, 255, 0.08);
+    border: 1px solid rgba(0, 229, 255, 0.35); border-radius: 8px;
+    color: #fff; cursor: pointer; font-family: inherit; line-height: 1.05;
+}
+.story-cell .sc-num { font-size: 0.85rem; font-weight: 900; }
+.story-cell .sc-ico { font-size: 0.7rem; min-height: 0.8rem; }
+.story-cell .sc-stars { font-size: 0.5rem; color: #ffd700; letter-spacing: 0; }
+.story-cell.done { background: rgba(0, 255, 102, 0.12); border-color: rgba(0, 255, 102, 0.55); }
+.story-cell.boss { border-color: #ff8a00; background: rgba(255, 138, 0, 0.15); }
+.story-cell.titan { border-color: #ffd700; background: rgba(255, 215, 0, 0.18); box-shadow: 0 0 8px rgba(255, 215, 0, 0.35); }
+.story-cell.current { border-color: #00ff99; box-shadow: 0 0 10px rgba(0, 255, 153, 0.7); animation: storyPulse 1.4s ease-in-out infinite; }
+.story-cell.selected { background: #00e5ff; color: #050508; box-shadow: 0 0 12px rgba(0, 229, 255, 0.9); }
+.story-cell.selected .sc-stars { color: #050508; }
+.story-cell.locked { opacity: 0.35; cursor: not-allowed; border-style: dashed; }
+@keyframes storyPulse { 50% { box-shadow: 0 0 16px rgba(0, 255, 153, 1); } }
+
+.story-info {
+    width: 100%; max-width: 400px; padding: 8px 10px; text-align: left;
+    background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 255, 153, 0.35); border-radius: 10px;
+}
+.si-title { font-size: 0.85rem; font-weight: 900; letter-spacing: 1px; color: #00ff99; }
+.si-line { font-size: 0.68rem; color: #c0c0e0; margin-top: 2px; }
+.si-line.stars { color: #ffd700; }
+.si-rule { font-size: 0.6rem; color: #707090; margin-top: 4px; }
+.story-actions { display: flex; flex-direction: column; gap: 6px; align-items: center; margin-top: 4px; }
+.story-actions .btn-neon { padding: 8px 20px; font-size: 0.8rem; }
+
+/* ---- Modal de resultado ---- */
+.story-result-modal { z-index: 30; background: rgba(5, 5, 12, 0.93); }
+.story-result { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; max-width: 380px; }
+.sr-title { font-size: 2rem; font-weight: 900; font-style: italic; letter-spacing: 2px; }
+.sr-title.ok { color: #00ff99; text-shadow: 0 0 18px rgba(0, 255, 153, 0.7); }
+.sr-title.bad { color: #ff0055; text-shadow: 0 0 18px rgba(255, 0, 85, 0.7); }
+.sr-sub { font-size: 0.8rem; font-weight: 700; letter-spacing: 1px; color: #a0a0c0; }
+.sr-sub.fail { color: #ff6688; }
+.sr-stars { display: flex; gap: 10px; font-size: 2.6rem; }
+.sr-star.on { color: #ffd700; text-shadow: 0 0 14px #ffd700; animation: srStarIn 0.5s both; animation-delay: var(--d, 0.4s); }
+.sr-star.off { color: #444; }
+@keyframes srStarIn { 0% { transform: scale(0) rotate(-90deg); opacity: 0; } 70% { transform: scale(1.4); } 100% { transform: scale(1); opacity: 1; } }
+.sr-grid { margin: 4px 0; }
+.sr-credits { font-size: 1.05rem; font-weight: 900; color: #00ff66; }
+.sr-credits.sub { font-size: 0.75rem; color: #7ad9a0; }
+.sr-note { font-size: 0.75rem; font-weight: 800; color: #ffd700; }
+.sr-note.dim { color: #707090; }
+.sr-tip { font-size: 0.72rem; color: #ffcc66; line-height: 1.4; }
+.sr-final { font-size: 1rem; font-weight: 900; color: #ffd700; }
+.sr-progress { width: 80%; height: 10px; background: rgba(255, 255, 255, 0.1); border: 1px solid #ff0055; border-radius: 5px; overflow: hidden; }
+.sr-progress-fill { height: 100%; background: linear-gradient(90deg, #ff0055, #ffaa00); }
+.sr-btns { display: flex; flex-direction: column; gap: 8px; align-items: center; margin-top: 6px; }
+
+@media (max-height: 640px) { .story-grid { max-height: 30vh; } .story-hud { top: 112px; } }

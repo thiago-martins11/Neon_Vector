@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>NEON VECTOR: CYBERSTRIKE ULTIMATE</title>
@@ -9,8 +15,10 @@
 <body>
 
     <div id="game-wrapper">
-        <!-- Canvas Principal -->
         <canvas id="gameCanvas"></canvas>
+
+        <!-- Efeito de Perigo (Low Health Vignette) -->
+        <div id="dangerVignette" class="danger-vignette hidden"></div>
 
         <!-- Camada HUD -->
         <div class="ui-layer">
@@ -27,7 +35,6 @@
                         <div id="healthFill" class="bar-fill health-fill"></div>
                     </div>
 
-                    <!-- HUD Discreto do Ultimate -->
                     <div class="ult-label-box">
                         <span>ULTIMATE [E]</span>
                         <span id="ultPercentVal">0%</span>
@@ -35,16 +42,25 @@
                     <div class="bar-bg ult-bar-bg">
                         <div id="ultFill" class="bar-fill ult-fill"></div>
                     </div>
+
+                    <div id="overloadBox" class="overload-box" title="Cyber Overload [Q]">
+                        <div class="ult-label-box overload-label-box">
+                            <span id="overloadLabel">OVERLOAD</span>
+                            <span id="overloadPercentVal">0%</span>
+                        </div>
+                        <div class="bar-bg overload-bar-bg">
+                            <div id="overloadFill" class="bar-fill overload-fill"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Botões Virtuais Mobile/Touch -->
             <div class="action-buttons-container">
                 <button id="dashBtn" class="action-btn dash-btn">DASH [SHIFT]</button>
                 <button id="ultBtn" class="action-btn ult-btn">ULTIMATE [E]</button>
             </div>
 
-            <!-- Barra de Vida do Chefe -->
+            <!-- Barra de Vida do Chefe / Sub-Chefe Multifásico -->
             <div id="bossHealthContainer" class="boss-health-container hidden">
                 <div id="bossTitle" class="boss-title">ALERTA: CHEFE DETECTADO</div>
                 <div class="boss-bar-bg">
@@ -52,12 +68,32 @@
                 </div>
             </div>
 
-            <!-- Alerta Central de Dificuldade Adaptada -->
+            <div id="bonusNotice" class="bonus-indicator hidden">
+                🌟 FASE BÔNUS! COLETE OS CRISTAIS! 🌟
+                <div id="bonusTimerVal" style="font-size: 1.4rem; color: #ffcc00; margin-top: 5px;">10s</div>
+            </div>
+
             <div id="adaptiveNotice" class="adaptive-indicator hidden">
                 ⚠️ DIFICULDADE ADAPTADA: NÍVEL AUMENTADO! ⚠️
             </div>
 
             <div id="powerupNotice" class="powerup-indicator">TIRO TRIPLO ATIVO!</div>
+
+            <!-- Anunciador de combos (DOUBLE KILL, NEON OVERLOAD...) -->
+            <div id="comboAnnouncer" class="combo-announcer"></div>
+
+            <!-- Aviso em tempo real: meta/conquista cumprida -->
+            <div id="questToast" class="quest-toast"></div>
+
+            <!-- Placar do fantasma (Modo Phantom) -->
+            <div id="phantomHud" class="phantom-hud hidden"></div>
+
+            <!-- HUD do Modo História: fase atual + barra de progresso -->
+            <div id="storyHud" class="story-hud hidden">
+                <div id="storyHudStage" class="story-hud-stage">FASE 001 / 1000</div>
+                <div class="story-hud-bar"><div id="storyHudFill" class="story-hud-fill"></div></div>
+                <div id="storyHudSub" class="story-hud-sub">ONDA 1/1 • HITS 0</div>
+            </div>
         </div>
 
         <!-- Tela Inicial -->
@@ -73,53 +109,105 @@
                     <button class="btn-diff" data-diff="HARD">DIFÍCIL</button>
                     <button class="btn-diff" data-diff="EXTREME">EXTREMO</button>
                     <button class="btn-diff btn-impossible" data-diff="IMPOSSIBLE">☠️ IMPOSSÍVEL</button>
+                    <button class="btn-diff btn-unplayable" data-diff="UNPLAYABLE">☣️ INJOGÁVEL</button>
                 </div>
             </div>
 
             <div class="main-menu-btns">
+                <button id="storyBtn" class="btn-neon btn-story">📖 MODO HISTÓRIA</button>
                 <button id="startBtn" class="btn-neon">JOGAR AGORA</button>
+                <button id="dailyBtn" class="btn-neon btn-secondary" style="border-color:#ffaa00; color:#ffaa00;">📅 DESAFIO DIÁRIO</button>
+                <button id="phantomBtn" class="btn-neon btn-secondary" style="border-color:#b388ff; color:#b388ff; box-shadow: 0 0 12px rgba(179,136,255,0.4);">👻 MODO PHANTOM</button>
                 <button id="shopBtn" class="btn-neon btn-secondary">LOJA DE UPGRADES</button>
+                <button id="achievementsBtn" class="btn-neon btn-secondary">CONQUISTAS</button>
                 <button id="leaderboardBtn" class="btn-neon btn-secondary">RANKING TOP 5</button>
             </div>
             <div class="instructions">
                 <strong>Controles:</strong><br>
-                Mover: <b>WASD / Setas / Arrasto</b> | Dash: <b>SHIFT</b><br>
+                Mover: <b>WASD / Setas / Arrasto</b> | Perfect Dash: <b>SHIFT</b><br>
                 Ultimate EMP: <b>Tecla E</b> | Pausar: <b>Tecla P</b><br>
-                <i>A dificuldade adapta-se e escala com a sua pontuação!</i>
+                Encha a barra <b>OVERLOAD</b> com Grazes e abates: invencível, feixe gigante e créditos x3!<br>
+                <b>Modo Phantom</b>: corra contra o fantasma da sua melhor partida.<br>
+                <span style="color:#00e5ff">Azul</span> escudo | <span style="color:#00ff66">Verde</span> vida | <span style="color:#ffcc00">Amarelo</span>/<span style="color:#ff00ff">Magenta</span> armas | <span style="color:#ffd700">Dourado</span> créditos<br>
+                <span style="color:#ff2a2a">Vermelho</span>, <span style="color:#ff8a00">laranja</span> e <span style="color:#9b30ff">roxo</span> brilhando = <b>PERIGO</b>: minas e naves-barreira machucam!<br>
+                <i>Cuidado com os <b>Chefes Multifásicos</b>: Eles entram em modo Berserk com mísseis perseguidores!</i>
             </div>
         </div>
 
-        <!-- Tela de Loja de Upgrades -->
+        <!-- Tela de Loja -->
         <div id="shopScreen" class="overlay-screen hidden">
             <h2 class="title-secondary">LOJA CYBERNETICA</h2>
             <p class="subtitle" id="shopCreditsText">SEUS CRÉDITOS: ₡ 0</p>
+            
             <div class="shop-items">
                 <div class="shop-item">
                     <div>
                         <strong>VIDA MÁXIMA</strong>
                         <div class="shop-desc" id="healthLvlText">Nível 1 (+0 HP)</div>
                     </div>
-                    <button id="buyHealthBtn" class="btn-shop">₡ 100</button>
+                    <button id="buyHealthBtn" class="btn-shop">₡ 25</button>
                 </div>
                 <div class="shop-item">
                     <div>
                         <strong>VELOCIDADE NAVE</strong>
                         <div class="shop-desc" id="speedLvlText">Nível 1 (+0 Spd)</div>
                     </div>
-                    <button id="buySpeedBtn" class="btn-shop">₡ 100</button>
+                    <button id="buySpeedBtn" class="btn-shop">₡ 30</button>
                 </div>
                 <div class="shop-item">
                     <div>
                         <strong>DURAÇÃO POWER-UP</strong>
                         <div class="shop-desc" id="durationLvlText">Nível 1 (+0s)</div>
                     </div>
-                    <button id="buyDurationBtn" class="btn-shop">₡ 150</button>
+                    <button id="buyDurationBtn" class="btn-shop">₡ 40</button>
                 </div>
+
+                <div style="margin-top: 10px; border-top: 1px solid rgba(0,229,255,0.3); padding-top: 8px;">
+                    <strong style="color: #00ffcc; font-size: 0.85rem;">DRONES AUXILIARES (BIT DRONES)</strong>
+                </div>
+                <div class="shop-item">
+                    <div>
+                        <strong>DRONE DE SUPORTE</strong>
+                        <div class="shop-desc" id="droneLvlText">Nível 0 (0 Drones)</div>
+                    </div>
+                    <button id="buyDroneBtn" class="btn-shop">₡ 150</button>
+                </div>
+
+                <div style="margin-top: 10px; border-top: 1px solid rgba(0,229,255,0.3); padding-top: 8px;">
+                    <strong style="color: #ff00ff; font-size: 0.85rem;">SKINS DE NAVE</strong>
+                </div>
+                <div class="shop-item">
+                    <div>
+                        <strong>SKIN V-WING</strong>
+                        <div class="shop-desc">Laser Rosa / Design Aerodinâmico</div>
+                    </div>
+                    <button id="buySkinVBtn" class="btn-shop">₡ 300</button>
+                </div>
+                <div class="shop-item">
+                    <div>
+                        <strong>SKIN DUAL-WING</strong>
+                        <div class="shop-desc">Laser Verde / Design de Asa Dupla</div>
+                    </div>
+                    <button id="buySkinDualBtn" class="btn-shop">₡ 600</button>
+                </div>
+                <div id="shopExtras"></div>
             </div>
-            <button id="closeShopBtn" class="btn-neon" style="margin-top: 20px;">VOLTAR</button>
+            <button id="closeShopBtn" class="btn-neon" style="margin-top: 15px;">VOLTAR</button>
         </div>
 
-        <!-- Tela de Ranking / Tabela de Líderes -->
+        <!-- Tela de Conquistas -->
+        <div id="achievementsScreen" class="overlay-screen hidden">
+            <h2 class="title-secondary">CONQUISTAS & DESAFIOS</h2>
+            <div class="tab-row">
+                <button id="tabAch" class="btn-tab active">CONQUISTAS</button>
+                <button id="tabQuests" class="btn-tab">METAS</button>
+            </div>
+            <div id="achievementsList" class="shop-items"></div>
+            <div id="questsList" class="shop-items" style="display:none;"></div>
+            <button id="closeAchievementsBtn" class="btn-neon" style="margin-top: 15px;">VOLTAR</button>
+        </div>
+
+        <!-- Tela de Ranking -->
         <div id="leaderboardScreen" class="overlay-screen hidden">
             <h2 class="title-secondary">MELHORES PILOTOS</h2>
             <div id="leaderboardList" class="leaderboard-list"></div>
@@ -129,21 +217,10 @@
         <!-- Tela de Pausa -->
         <div id="pauseScreen" class="overlay-screen hidden">
             <h1 class="title-main" style="color: #00e5ff;">JOGO PAUSADO</h1>
-            
-            <div class="difficulty-container" style="margin-bottom: 20px;">
-                <label class="diff-label">DIFICULDADE BASE:</label>
-                <div class="diff-selector">
-                    <button class="btn-diff active" data-diff="EASY">FÁCIL</button>
-                    <button class="btn-diff" data-diff="MEDIUM">MÉDIO</button>
-                    <button class="btn-diff" data-diff="HARD">DIFÍCIL</button>
-                    <button class="btn-diff" data-diff="EXTREME">EXTREMO</button>
-                    <button class="btn-diff btn-impossible" data-diff="IMPOSSIBLE">☠️ IMPOSSÍVEL</button>
-                </div>
-            </div>
-
             <div class="pause-menu-btns">
                 <button id="resumeBtn" class="btn-neon">CONTINUAR</button>
                 <button id="soundToggleBtn" class="btn-neon btn-secondary">SOM: LIGADO</button>
+                <button id="pauseStoryBtn" class="btn-neon btn-story pause-story-btn">MENU DE FASES</button>
                 <button id="quitBtn" class="btn-neon btn-secondary">MENU PRINCIPAL</button>
             </div>
         </div>
@@ -153,6 +230,9 @@
             <h1 class="title-main" style="color: #ff0055;">SISTEMA DESTRUIDO</h1>
             <p class="subtitle" id="finalScoreText">PONTUAÇÃO FINAL: 0</p>
             <p class="subtitle" id="earnedCreditsText" style="color: #00ff66; margin-top: -30px;">+0 CRÉDITOS OBTIDOS</p>
+
+            <p id="gameOverTaunt" class="game-over-taunt"></p>
+            <div id="runStatsGrid" class="run-stats-grid"></div>
             
             <div id="nameInputContainer" class="name-input-container">
                 <input type="text" id="playerNameInput" maxlength="10" placeholder="SEU NOME" />
@@ -160,7 +240,27 @@
             </div>
 
             <button id="restartBtn" class="btn-neon" style="margin-top: 15px;">REINICIAR</button>
+            <button id="gameOverMenuBtn" class="btn-neon btn-secondary" style="margin-top: 10px;">MENU PRINCIPAL</button>
         </div>
+
+        <!-- Tela de Seleção de Fases (Modo História) -->
+        <div id="storyScreen" class="overlay-screen story-screen hidden">
+            <h2 class="title-secondary">MODO HISTÓRIA</h2>
+            <div class="story-top-row">
+                <span id="storyProgressText">FASE ATUAL: 1 / 1000</span>
+                <span id="storyStarsTotal">★ 0 / 3000</span>
+            </div>
+            <div id="storyGrid" class="story-grid"></div>
+            <div id="storyInfo" class="story-info"></div>
+            <div class="story-actions">
+                <button id="storyPlayBtn" class="btn-neon">JOGAR FASE</button>
+                <button id="storyJumpBtn" class="btn-neon btn-secondary">IR PARA FASE ATUAL</button>
+                <button id="storyBackBtn" class="btn-neon btn-secondary">VOLTAR</button>
+            </div>
+        </div>
+
+        <!-- Resultado da fase (vitória / derrota) -->
+        <div id="storyResultModal" class="overlay-screen story-result-modal hidden"></div>
     </div>
 
     <script src="script.js" defer></script>
